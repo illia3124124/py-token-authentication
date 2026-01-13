@@ -1,5 +1,5 @@
 from django.db import transaction
-from rest_framework import serializers
+from rest_framework import serializers, mixins, generics
 
 from cinema.models import (
     Genre,
@@ -12,25 +12,42 @@ from cinema.models import (
 )
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
     class Meta:
         model = Genre
         fields = ("id", "name")
 
 
-class ActorSerializer(serializers.ModelSerializer):
+class ActorSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
     class Meta:
         model = Actor
         fields = ("id", "first_name", "last_name", "full_name")
 
 
-class CinemaHallSerializer(serializers.ModelSerializer):
+class CinemaHallSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
     class Meta:
         model = CinemaHall
         fields = ("id", "name", "rows", "seats_in_row", "capacity")
 
 
-class MovieSerializer(serializers.ModelSerializer):
+class MovieSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
+):
     class Meta:
         model = Movie
         fields = ("id", "title", "description", "duration", "genres", "actors")
@@ -54,7 +71,14 @@ class MovieDetailSerializer(MovieSerializer):
         fields = ("id", "title", "description", "duration", "genres", "actors")
 
 
-class MovieSessionSerializer(serializers.ModelSerializer):
+class MovieSessionSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
+):
     class Meta:
         model = MovieSession
         fields = ("id", "show_time", "movie", "cinema_hall")
@@ -117,7 +141,11 @@ class MovieSessionDetailSerializer(MovieSessionSerializer):
         fields = ("id", "show_time", "movie", "cinema_hall", "taken_places")
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
     tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
 
     class Meta:
